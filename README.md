@@ -1,2 +1,4 @@
 # ClassroomNotifyLINE
 クラスルーム通知線
+
+クラスルームの名前とLINENotifyのトークンを入れるだけで、クラスルームの投稿をLINEで通知できます。
