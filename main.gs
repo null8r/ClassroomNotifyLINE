@@ -6,31 +6,24 @@ const url = "https://notify-api.line.me/api/notify";
 
 let classId, postList, msg, i;
 
-//送信内容を作成
-function send(){
-  if( postList != undefined ){
-    //投稿の数だけ送信処理
-    for(i=0; i<postList.length; i++){
-      //送信内容設定
-      msg = "";
-      postList[i].forEach(function(element){
-        msg = msg + element;
-      });
+//クラス名からクラスIDを取得
+function getClassId() {
+  let courses = Classroom.Courses.list().courses;
 
-      options = {
-        "method": "post",
-        "payload": {"message": "\n" + msg},
-        "headers": {"Authorization": "Bearer " + token}
-      };
-
-      UrlFetchApp.fetch(url, options);
-      console.log(msg);
+  for(i=0; i<=courses.length-1; i++){
+    switch(courses[i].name){
+      case className:
+      classId = courses[i].id;
+      break;
     }
-    console.log("上記 " + i + "件のメッセージを送信しました。");
+  }
+  if(classId == undefined){
+    classId = null;
+    console.error("該当するクラスが見つかりませんでした。")
   }
   else{
-    console.error("投稿内容が取得できなかったため、送信できませんでした。")
-  } 
+    getClassPosts();
+  }
 }
 
 //クラスルームの投稿を取得
@@ -38,10 +31,10 @@ function getClassPosts(){
   //クラスルームの投稿をすべて取得
   let posts = Classroom.Courses.Announcements.list(classId)["announcements"];
 
-  //取得した投稿を格納する用
+  //取得した投稿を格納する用の変数
   postList = [];
 
-  //取得した投稿の数だけ繰り返し実行(過去→最新の順)
+  //取得した投稿の数だけ繰り返し実行(過去→最新の順: i=0;i<posts.lengthだと逆になる)
   for(i=posts.length-1; i>=0; i--){
     //現在時刻を取得
     let nowTime = new Date();
@@ -64,13 +57,13 @@ function getClassPosts(){
         userName + " さん",
         " (" + hours + ":" + mins + ")\n",
         posts[i]["text"] + "\n",
-        posts[i]["alternateLink"] + "?openExternalBrowser=1" //?open~はLINEから外部ブラウザを起動させるため
+        posts[i]["alternateLink"] + "?openExternalBrowser=1"
       ]
       //postListに格納
       postList.push(postArry);
     }
   }
-  //5分以内に投稿されたものがない場合
+  //5分以内に投稿されたものがない場合、nullを入れる
   if(postList == ""){
     postList = null;
     console.log("新しい投稿がなかったため、通知をしません。")
@@ -80,25 +73,29 @@ function getClassPosts(){
   }
 }
 
-//クラスルームのクラスIDの取得
-function getClassId() {
-  //クラスをすべて取得
-  let courses = Classroom.Courses.list().courses;
+//送信内容を作成
+function send(){
+  if( postList != undefined ){
+    //投稿の数だけ送信処理
+    for(i=0; i<postList.length; i++){
+      //送信内容設定
+      msg = "";
+      postList[i].forEach(function(element){
+        msg = msg + element;
+      });
 
-  //取得したクラスの数だけ繰り返し
-  for(i=0; i<=courses.length-1; i++){
-    //通知したいクラス名とクラスIDを探す
-    switch(courses[i].name){
-      case "className":
-      classId = courses[i].id;
-      break;
+      options = {
+        "method": "post",
+        "payload": {"message": "\n" + msg},
+        "headers": {"Authorization": "Bearer " + token}
+      };
+
+      //UrlFetchApp.fetch(url, options);
+      console.log(msg);
     }
-  }
-  if(classId == undefined){
-    classId = null;
-    console.error("該当するクラスが見つかりませんでした。")
+    console.log("上記 " + i + "件のメッセージを送信しました。");
   }
   else{
-    getClassPosts();
-  }
+    console.error("投稿内容を取得することができなかったため、送信できませんでした。")
+  } 
 }
