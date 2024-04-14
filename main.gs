@@ -75,7 +75,6 @@ function getClassPosts(){
 
 //送信内容を作成
 function send(){
-  //getClassPostsが実行されずに送信処理されないように
   if( postList != undefined ){
     //投稿の数だけ送信処理
     for(i=0; i<postList.length; i++){
