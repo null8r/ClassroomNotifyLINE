@@ -31,7 +31,7 @@ function getClassPosts(){
   //クラスルームの投稿をすべて取得
   let posts = Classroom.Courses.Announcements.list(classId)["announcements"];
 
-  //取得した投稿を格納する用の変数
+  //取得した投稿を格納する変数
   postList = [];
 
   //取得した投稿の数だけ繰り返し実行(過去→最新の順: i=0;i<posts.lengthだと逆になる)
@@ -90,7 +90,7 @@ function send(){
         "headers": {"Authorization": "Bearer " + token}
       };
 
-      //UrlFetchApp.fetch(url, options);
+      UrlFetchApp.fetch(url, options);
       console.log(msg);
     }
     console.log("上記 " + i + "件のメッセージを送信しました。");
